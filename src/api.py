@@ -3,9 +3,11 @@ import os
 import shutil
 from pathlib import Path
 from uuid import uuid4
+import tempfile
 
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, Response
 from pydantic import BaseModel
+from faq import load_faq
 
 from settings import settings
 
@@ -36,6 +38,29 @@ class VoiceResponse(BaseModel):
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def ready(response: Response) -> dict[str, object]:
+    """Readiness: czy ten pod potrafi obsłużyć POST /voice. 503 = K8s wyjmuje go z Service."""
+    failed = []
+    try:
+        if not load_faq():
+            failed.append("faq")
+    except OSError:
+        failed.append("faq")
+    if not settings.openai_api_key:
+        failed.append("openai_api_key")
+    try:
+        Path(settings.uploads_dir).mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryFile(dir=settings.uploads_dir):
+            pass
+    except OSError:
+        failed.append("uploads")
+
+    if failed:
+        response.status_code = 503
+    return {"status": "not ready" if failed else "ready", "failed": failed}
 
 
 @app.post("/voice")

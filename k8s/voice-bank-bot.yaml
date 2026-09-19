@@ -28,12 +28,18 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
-          readinessProbe:
-            httpGet: { path: /health, port: 8020 }
+          startupProbe:
+            httpGet: { path: /health, port: 9999 }
             initialDelaySeconds: 2
+            periodSeconds: 30
+          readinessProbe:
+            httpGet: { path: /ready, port: 8020 }
+            initialDelaySeconds: 2
+            periodSeconds: 20
           livenessProbe:
             httpGet: { path: /health, port: 8020 }
             initialDelaySeconds: 5
+            periodSeconds: 20
           volumeMounts:
             - name: uploads
               mountPath: /app/data/uploads
