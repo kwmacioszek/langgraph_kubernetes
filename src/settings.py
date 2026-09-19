@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     langsmith_tracing: bool = False  # LANGSMITH_TRACING
     langsmith_api_key: str = ""  # LANGSMITH_API_KEY
     langsmith_project: str = "voice-bank-bot"  # LANGSMITH_PROJECT
+    langsmith_endpoint: str = ""  # LANGSMITH_ENDPOINT
 
     uploads_dir: Path = Path("data/uploads")
 
