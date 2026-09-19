@@ -34,6 +34,23 @@ spec:
           livenessProbe:
             httpGet: { path: /health, port: 8020 }
             initialDelaySeconds: 5
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/data/uploads
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: voice-bank-bot-uploads
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: voice-bank-bot-uploads
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
