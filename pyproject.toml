@@ -1,0 +1,21 @@
+[project]
+name = "voice-bank-bot"
+version = "0.1.0"
+description = "Prosty voice bot bankowy: Whisper API -> korekta -> routing (LangGraph)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.141.1",
+    "langgraph>=1.2.11",
+    "langsmith>=0.12.6",
+    "openai>=3.14.1",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "python-multipart>=0.0.32",
+    "uvicorn[standard]>=0.53.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+    "ruff>=0.16.8",
+]
