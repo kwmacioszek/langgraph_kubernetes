@@ -36,6 +36,7 @@ class GraphState(BaseModel):
     intent: Intent | None = None
     answer: str = ""
     escalated: bool = False
+    answer_audio_path: str = ""
 
 
 class FaqAnswer(BaseModel):

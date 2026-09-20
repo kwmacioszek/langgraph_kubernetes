@@ -2,6 +2,9 @@ from schemas import GraphState
 import stt
 import llm
 import logging
+from pathlib import Path
+from settings import settings
+import tts
 from uuid import uuid4
 from langgraph.graph import END, StateGraph
 
@@ -48,6 +51,11 @@ def route_to_consultant_node(state: GraphState) -> dict:
     return _consultant_handoff(state.intent.question)
 
 
+def speak_answer_node(state: GraphState) -> dict:
+    uidd = uuid4().hex[:16]
+    out_path = Path(settings.replies_dir) / f"{Path(state.audio_path).stem}_{uidd}.mp3"
+    return {"answer_audio_path": str(tts.synthesize_file(state.answer, out_path))}
+
 
 def build_graph():
     graph = StateGraph(GraphState)
@@ -56,6 +64,7 @@ def build_graph():
     graph.add_node("classify_intent", classify_intent_node)
     graph.add_node("faq_answer", faq_answer_node)
     graph.add_node("route_to_consultant", route_to_consultant_node)
+    graph.add_node("speak_answer", speak_answer_node)
 
     graph.set_entry_point("transcribe")
     graph.add_edge("transcribe", "log_transcript")
@@ -65,6 +74,7 @@ def build_graph():
         route_after_classify,
         {"faq": "faq_answer", "consultant": "route_to_consultant"},
     )
-    graph.add_edge("faq_answer", END)
+    graph.add_edge("faq_answer", "speak_answer")
+    graph.add_edge("speak_answer", END)
     graph.add_edge("route_to_consultant", END)
     return graph.compile()

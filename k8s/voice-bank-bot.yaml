@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: voice-bank-bot
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: voice-bank-bot
@@ -78,7 +78,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: voice-bank-bot
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 5
   metrics:
     - type: Resource

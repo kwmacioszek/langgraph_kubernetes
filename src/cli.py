@@ -43,6 +43,7 @@ def main() -> None:
                     "question": result["intent"].question,
                     "answer": result["answer"],
                     "escalated": result["escalated"],
+                    "answer_audio_path": result["answer_audio_path"],
                 },
                 ensure_ascii=False,
                 indent=2,
@@ -55,6 +56,7 @@ def main() -> None:
     print(f"Pytanie:      {result['intent'].question}")
     print(f"Odpowiedź:    {result['answer']}")
     print(f"Eskalacja:    {result['escalated']}")
+    print(f"Ścieżka do odpowiedzi audio: {result['answer_audio_path']}")
 
 
 if __name__ == "__main__":
