@@ -40,6 +40,16 @@ def faq_answer_node(state: GraphState) -> dict:
     return {"answer": result.answer, "escalated": False}
 
 
+def log_faq_answer_node(state: GraphState) -> dict:
+    logger.info(
+        "odpowiedz_faq category=%s escalated=%s answer=%r",
+        state.intent.category,
+        state.escalated,
+        state.answer,
+    )
+    return {}
+
+
 def route_after_classify(state: GraphState) -> str:
     return "consultant" if state.intent.category == "consultant" else "faq"
 
@@ -55,6 +65,7 @@ def build_graph():
     graph.add_node("log_transcript", log_transcript_node)
     graph.add_node("classify_intent", classify_intent_node)
     graph.add_node("faq_answer", faq_answer_node)
+    graph.add_node("log_faq_answer", log_faq_answer_node)
     graph.add_node("route_to_consultant", route_to_consultant_node)
 
     graph.set_entry_point("transcribe")
@@ -65,6 +76,7 @@ def build_graph():
         route_after_classify,
         {"faq": "faq_answer", "consultant": "route_to_consultant"},
     )
-    graph.add_edge("faq_answer", END)
+    graph.add_edge("faq_answer", "log_faq_answer")
+    graph.add_edge("log_faq_answer", END)
     graph.add_edge("route_to_consultant", END)
     return graph.compile()
