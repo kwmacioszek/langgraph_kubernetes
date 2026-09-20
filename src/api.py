@@ -7,6 +7,8 @@ import tempfile
 
 from fastapi import FastAPI, UploadFile, Response
 from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Response, UploadFile
+from fastapi.responses import FileResponse
 from faq import load_faq
 
 from settings import settings
@@ -33,6 +35,7 @@ class VoiceResponse(BaseModel):
     question: str
     answer: str
     escalated: bool
+    answer_audio_path: str
 
 
 @app.get("/health")
@@ -78,6 +81,16 @@ def voice(file: UploadFile) -> VoiceResponse:
         raw_transcript=result["raw_transcript"],
         category=result["intent"].category,
         question=result["intent"].question,
-        answer=result["answer"],
+        answer=result["answer"], 
         escalated=result["escalated"],
+        answer_audio_path=result["answer_audio_path"],
     )
+
+
+@app.get("/replies/{name}")
+def reply(name: str) -> FileResponse:
+    path = Path(settings.replies_dir) / name
+    if Path(name).name != name or not path.is_file():
+        raise HTTPException(status_code=404, detail="Nie ma takiej odpowiedzi audio")
+    return FileResponse(path, media_type="audio/mpeg")
+
