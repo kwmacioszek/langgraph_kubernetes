@@ -35,6 +35,7 @@ class VoiceResponse(BaseModel):
     question: str
     answer: str
     escalated: bool
+    answer_audio_path: str
 
 
 @app.get("/health")
@@ -80,8 +81,9 @@ def voice(file: UploadFile) -> VoiceResponse:
         raw_transcript=result["raw_transcript"],
         category=result["intent"].category,
         question=result["intent"].question,
-        answer=result["answer"],
+        answer=result["answer"], 
         escalated=result["escalated"],
+        answer_audio_path=result["answer_audio_path"],
     )
 
 
